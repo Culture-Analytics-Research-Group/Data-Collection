@@ -1,0 +1,147 @@
+
+	
+	body{
+		background-color: #000000;
+	}
+
+	img.page{
+		max-width:100%;
+		width:auto;
+		height:100%;
+		display:block;
+		float: right;
+	}
+
+
+	img.face{
+		max-width:100%;
+		max-height:90%;
+		min-width: 100px;
+		min-height: 100px;
+		display:block;
+		margin-top: 50px;
+		float: right;
+	}
+
+	h1{
+		color:#dedede;
+	}
+	form{
+		color:#dedede;
+	}
+
+	.instructions {
+		color:#C4C4B0;
+	}
+
+	#page_num {
+		position: fixed;
+		right: 0px;
+		top: 0px;
+		text-align: center;
+		padding: 8px;
+		background-color: #efefef;
+		z-index: 1;
+		border-radius: 0px 0px 0px 10px;
+	}
+
+	#face_num {
+		position: fixed;
+		left: 0px;
+		top: 100px;
+		text-align: center;
+		padding: 8px;
+		background-color: #efefef;
+		z-index: 1;
+		border-radius: 0px 10px 10px 0px;
+	}
+
+	.input{
+		font-size: 20px;
+	}
+
+	.button1{
+		border-radius:4px;
+		background-color:gray;
+		font-size:16px;
+		padding:16px;
+	}
+
+
+	#contentDiv{
+		float:left;
+		width:50%;
+		height:99vh;
+	}
+	#interfaceDiv{
+		position: absolute;
+		left: 52%;
+		width: 45%;
+		height: 99vh;
+		overflow: visible;
+	}
+
+	#col1{
+		float: left;
+	}
+	#col2{
+		float: left;
+		margin-left: 50px;
+	}
+	#multi{
+		/*display: none;*/
+	}
+	#cat{
+		/*display: none;*/
+	}
+
+	.radio_text{
+		display: inline;
+	}
+
+	#another_button {
+		display: none;
+	}
+
+	#instructions2 {
+		display: none;
+	}
+
+	#warning {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		width: 50%;
+		text-align: center;
+		background-color: #B20000;
+		padding-top: 10px;
+		padding-bottom: 10px;
+		font-size: 25px;
+		font-weight: 700;
+		z-index: +2;
+		color: #ffffff;
+	}
+
+
+	#another_instructions{
+		visibility: hidden;
+		margin-top: 5px;
+	}
+
+	#done_instructions{
+		visibility: hidden;
+		margin-top: 5px;
+	}
+
+	#demo{
+		width: 50%;
+		margin-left: 25%;
+	}
+
+@media (max-width: 800px){
+	#col2{	
+		margin-left: 5px;
+	}
+}
+
+}
