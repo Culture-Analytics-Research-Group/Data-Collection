@@ -1,9 +1,10 @@
 # Data-Collection
 
-The original purpose of this code was for gathering data on faces cropped from TIME Magazine and therefore the data queries and varibles in this code are based around that purpose.
-If this is to be used as a template for a similar task the data queries and variable will require editing.   
+The original purpose of this code was for cropping and gathering data on faces in a magazine archive and therefore the data queries and varibles in this code are based around that purpose. If this is to be used as a template for a similar task (such as cropping and gathering data on cars or trains, etc), the data queries and variable will require editing.   
 
-This is a web interface for gathering data from images on a large scale through Amazon Mechanical Turk. It has three different data gathering surveys that are part of it.
+This is a web interface for gathering data from images on a large scale. Users should serve it with accompanying writable sql databases. We provide the accompanying database structures here. This interface is platform independent in that you can collect data directly with it.  However, we find it useful to use Amazon Mechanical Turk to find participants.  To use it with Amazaon Mechanical Turk, we shared it as a survey link and had participants enter their completion code, so that we could verify participants' work.
+
+
 The first survey allows users to crop portion of an image. The second survey allows users to classify the already cropped images from a selection
 of categories. The third survey is simply a demographics survey that allows users to enter their demgraphic imformation, and is presented at the end 
 of the previous two surveys.
