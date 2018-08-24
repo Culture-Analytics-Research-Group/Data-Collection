@@ -4,11 +4,11 @@ The original purpose of this code was for cropping and gathering data on faces i
 
 This is a web interface for gathering data from images on a large scale. Users should serve it with accompanying writable sql databases. We provide the accompanying database structures here. This interface is platform independent in that you can collect data directly with it.  However, we find it useful to use Amazon Mechanical Turk to find participants.  To use it with Amazaon Mechanical Turk, we shared it as a survey link and had participants enter their completion code at the end of the survey, so that we could verify their work.
 
-This package has three different data gathering surveys that are part of it.
-The first survey allows users to crop portions of an image.   The second survey allows users to classify the already cropped images from a selection of categories. 
+This package comprises three different data gathering surveys.
 
-The survey contains multiple pages (in our case 50), and the participant has to select and submit all the faces from each page.
+The first survey allows users to crop portions of an image. The first survey allows users to crop portions of an image.   (For the crop, we used https://github.com/odyniec/imgareaselect ‘imgareaselect’ by Michal Wojciechowski. )
 
+The second survey allows users to classify the already cropped images from a selection of categories. 
 
 The third survey is simply a demographics survey that allows users to enter their demographic information, and is presented at the end of each of the previous two surveys.
 
