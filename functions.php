@@ -19,15 +19,12 @@ $check_data2 = array();
 $check_data3 = array();
 
 function db_connect (){
-	#$servername = "localhost";
-	#$username = "onewoma8_TIME";
-	#$password = '#8dL_lC0{y5z';
-	#$db = "onewoma8_TIME";
-	
+
+#Edit these
 	$servername = "localhost";
 	$username = "root";
 	$password = '';
-	$db = "time_data";
+	$db = "data";
 		
 	$connection = mysqli_connect($servername, $username, $password, $db);
 	
