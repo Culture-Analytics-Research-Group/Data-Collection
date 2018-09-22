@@ -79,4 +79,6 @@ demographic($job, $file_array, $check_data1, $check_data2, $check_data3)- displa
 
 coverfaces($job, $connection, $filename, $file_data)- covers previously cropped faces on images where multiple objects need to be cropped, by selecting previously submitted x and y coordinates from the database. If the image is a ground truth image then it selects from the temporary entry in the table for crop checks
 
+////////////
 
+clear_junk.php and clear_junk_tag.php run in the background to delete data from jobs that have timed out.
