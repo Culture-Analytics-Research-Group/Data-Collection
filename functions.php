@@ -1,6 +1,5 @@
 <?php
 $job = $_GET["load"];
-
 if($job == "crop"){
 	$batch_size = 50; 
 	$check = array(16, 32, 46);
@@ -9,9 +8,8 @@ if($job == "crop"){
 }
 if($job == "tag"){
 	$batch_size = 25;
-	$check = array(5, 16, 22);
+	$check = array(1, 10, 16);
 }
-
 global $file_array, $check_array;
 $file_array = array();
 $check_data1 = array();
@@ -22,9 +20,9 @@ function db_connect (){
 
 #Edit these
 	$servername = "localhost";
-	$username = "root";
-	$password = '';
-	$db = "data";
+	$username = "...";
+	$password = '...';
+	$db = "...";
 		
 	$connection = mysqli_connect($servername, $username, $password, $db);
 	
@@ -34,7 +32,6 @@ function db_connect (){
 	
 	return $connection;
 }
-
 function select($job, $batch_size, $connection){
 	
 	if($job == "crop"){
@@ -42,13 +39,11 @@ function select($job, $batch_size, $connection){
 		$count_query2 = "SELECT COUNT(*) FROM `pages` WHERE `faces` IS NULL AND `group_num` IS NULL;";
 		$select_query = "SELECT `page_file` FROM `pages` WHERE `faces` IS NULL AND `group_num` IS NULL AND `working`= 0 ORDER BY RAND() LIMIT 1;";
 	}
-
 	if($job == "tag"){
 		$count_query1 = "SELECT COUNT(*) FROM `data` WHERE `gender` IS NULL AND `working`=1;";
 		$count_query2 = "SELECT COUNT(*) FROM `data` WHERE `gender` IS NULL;";
 		$select_query = "SELECT `image` FROM `data` WHERE `gender` IS NULL AND `working`=0 ORDER BY RAND() LIMIT 1;";
 	}
-
 	
 	$result = mysqli_query($connection, $count_query1);
 	$row = mysqli_fetch_array($result);
@@ -57,8 +52,7 @@ function select($job, $batch_size, $connection){
 	$result = mysqli_query($connection, $count_query2);
 	$row = mysqli_fetch_array($result);
 	$count2 = $row[0];
-
-	if(($count2/$batch_size) > ($count1)){
+	if(($count2/($batch_size-3)) < ($count1)){
 		echo "<h1>Page requests are at capacity. <br> Please try again later.</h1>";
 		exit;
 	}
@@ -70,7 +64,6 @@ function select($job, $batch_size, $connection){
 	if($job == "crop"){
 		$update_query = "UPDATE `pages` SET `working` = 1, `timestamp` = NOW() WHERE `page_file` = '$file_name';";
 	}
-
 	if($job == "tag"){
 		$update_query = "UPDATE `data` SET `working` = 1, `timestamp` = NOW() WHERE `image` = '$file_name';";	
 	}
@@ -80,7 +73,6 @@ function select($job, $batch_size, $connection){
 	return $file_name;
 	
 }
-
 function parse_filename($job, $filename){
 	$year = substr($filename, 0, 4);
 	$month = substr($filename, 5, 2);
@@ -95,7 +87,6 @@ function parse_filename($job, $filename){
 		$crop_filename = $year."-".$month."-".$day." page".$page_number." face1.jpg";
 		$file_data = array($year,$month,$day,$page_number,$crop_filename,$page_file_source,$face_total);
 	}
-
 	if($job == "tag"){
 		$filename = chop($filename, "face0..9.jpg");
 		$page_number = (int)substr($filename, 15);
@@ -105,7 +96,6 @@ function parse_filename($job, $filename){
 	}
 	return $file_data;
 }
-
 function hidden($job, $batch_current, $filename, $file_data, $file_array, $check_data1, $check_data2, $check_data3){
 	
 	echo '<input type="hidden" name="batch_current" value="'.$batch_current.'">
@@ -125,7 +115,6 @@ function hidden($job, $batch_current, $filename, $file_data, $file_array, $check
 			 <input type="hidden" name="img_height" value="">';
 	}	
 }
-
 function display($job, $file_data){
 	echo '<h2>'.$file_data[1].'&nbsp/'.$file_data[2].'&nbsp/'.$file_data[0].'&nbsp Page:'.$file_data[3].'</h2>';
 	
@@ -136,11 +125,9 @@ function display($job, $file_data){
 			 <input id = "NO_FACE_ON_PAGE" type="radio" name="face" value="0" required onclick = "hide();"> 
 			 <div class="radio_text" id="NoFaceText" onclick = "check(\'NO_FACE_ON_PAGE\'); hide();"> 
 			 There are no clearly visible faces on this page </div> <br>
-
 			 <input id = "FACE_ON_PAGE" type="radio" name="face" value="1" required onclick = "show(); check_inputs();"> 
 			 <div class="radio_text" id="FaceText" onclick = "check(\'FACE_ON_PAGE\'); show(); check_inputs();">
 			 There is at least one <b style="font-size: 1.1em">clearly visible</b> face on this page</div> <br><br>
-
 			 <button id = "another_button" type="submit" name="submitted" value="another"> There\'s another <span style="font-size: 1.2em;">clearly visible </span> face on this page. </button> 
 			 <div class="instructions" id="another_instructions"> If you have more faces to crop and tag on this page, click here.</div><br>
 			 <button id = "submit_button" type="submit" name="submitted" value="submit"> <span style="font-size: 1.2em;">Done with this page.</span> </button> 
@@ -148,9 +135,8 @@ function display($job, $file_data){
 		
 		
 	}
-
 	if($job == "tag"){
-		echo '<p class="instructions" style="margin-top: 35px; font-size: 25px;"> The image on the left features a selected face, <br> marked by a red rectangle. </p> 
+		echo '<p class="instructions" style="margin-top: 35px; font-size: 25px;"> The image on the left features a selected face, <br> marked by a green rectangle. </p> 
 			  <p class="instructions"> Answer the following questions about the selected face as best as you can.</p> <br>
 			 	 
 			  <span class="titles">Is the selected face depicted in full color or in a single shade (in monochrome)?<br></span>
@@ -213,11 +199,9 @@ function display($job, $file_data){
 			  <input type="submit" name="submitted" value="submit"> <br><br>';
 	}	
 }
-
 function post_variables($job){
 	global $refresh_check, $batch_current, $submitted, $filename, $file_data, $file_array, $check_data1, $check_data2, $check_data3;
 	$refresh_check = false;
-
 	$batch_current = $_POST["batch_current"];
 	$filename = $_POST["filename"];
 	$file_data = explode(',',$_POST["file_data"]);
@@ -262,9 +246,7 @@ function post_variables($job){
 		$race =	$_POST["race"];
 		$location = $_POST["location"];	
 	}
-
 }
-
 function submit($job, $connection){
 	global $filename;
 	if($job == "crop"){
@@ -295,7 +277,6 @@ function submit($job, $connection){
 		}
 		
 	}
-
 	if($job == "tag"){
 		global $color, $photo, $angle, $gender, $race, $adult, $smile, $quality, $multiface, $category;
 		$insert_query = "UPDATE `data` SET `color`= $color, `photo`=$photo, `angle`=$angle, `gender`='$gender', `race`='$race', 
@@ -305,7 +286,6 @@ function submit($job, $connection){
 		mysqli_query($connection, $update_query);	
 	}
 }
-
 function final_submit($job, $connection){
 	global $age, $gender, $race, $location, $file_array, $check_data1, $check_data2, $check_data3;
 	if($job == "crop"){
@@ -348,7 +328,6 @@ function final_submit($job, $connection){
 			if ($check_gender!=$check_entry[3]){$flag++;}
 			if ($check_color!=$check_entry[0]){$flag++;}
 			if ($check_photo!=$check_entry[1]){$flag++;}
-
 			$check_array[] = $check_entry[10];
 			$flag_array[] = $flag;
 			
@@ -357,14 +336,12 @@ function final_submit($job, $connection){
 			mysqli_query($connection, $insert_check_query);	
 		}
 	}
-
 	if($job == "crop"){
 		$insert_flag_query = "INSERT INTO crop_groups (group_num, flag, flag2, flag3, faces1, faces2, faces3, check1, check2, check3, code) VALUES($group, $flag_array[0], $flag_array[1],
 							 $flag_array[2], $faces_array[0], $faces_array[1], $faces_array[2], '$check_array[0]', '$check_array[1]', '$check_array[2]', $code);";
 							 
 		$demo_query = "INSERT INTO `demographics` (`crop_group`, `age`, `race`, `gender`, `location`) VALUES ($group, '$age', '$race', '$gender', '$location');";	
 	}
-
 	if($job == "tag"){
 		$insert_flag_query = "INSERT INTO `tag_groups` (`tag_group`, `flag`, `flag2`, `flag3`, `check1`, `check2`, `check3`, `code`) VALUES($group, 
 							 $flag_array[0], $flag_array[1], $flag_array[2], '$check_array[0]', '$check_array[1]', '$check_array[2]', $code);";
@@ -387,7 +364,6 @@ function final_submit($job, $connection){
 	
 	return $code;
 }
-
 function post_hidden(){
 	global $refresh_check, $submitted, $batch_current, $filename, $file_data, $file_array, $check_data1, $check_data2, $check_data3;
 	
@@ -402,12 +378,10 @@ function post_hidden(){
 		 <input type="hidden" name="check_data3" value="'.implode(',',$check_data3).'">';
 	
 }
-
 function check_select($job, $connection){
 	if($job == "crop"){
 		$select_query = "SELECT `File` FROM `ground_truth_crop` ORDER BY RAND() LIMIT 1;";
 	}
-
 	if($job == "tag"){
 		$select_query = "SELECT `image` FROM `ground_truth` ORDER BY RAND() LIMIT 1;";
 	}	
@@ -418,7 +392,6 @@ function check_select($job, $connection){
 	$filename = $row[0];
 	return $filename;
 }
-
 function crop_image(){
 	global $filename, $file_data, $x1, $x2, $y1, $y2, $img_width, $img_height;
 	$path = "faces/".$file_data[0]."-".$file_data[1]."-".$file_data[2];
@@ -426,7 +399,6 @@ function crop_image(){
 	$image_size = getimagesize($file_data[5].$filename);
 	$w = $image_size[0];
 	$h = $image_size[1];
-
 	$img_width=$w*$img_height/$h;
 	
 	if(!file_exists($path)){
@@ -437,7 +409,6 @@ function crop_image(){
 	$x2 = $x2*$w/$img_width;
 	$y1 = $y1*$h/$img_height;
 	$y2 = $y2*$h/$img_height;
-
 	$window = array('x' => $x1, 'y' => $y1, 'width' => ($x2-$x1) , 'height' => ($y2-$y1));
 	
 	$crop = imagecreatefromjpeg($file_data[5].$filename);
@@ -445,52 +416,38 @@ function crop_image(){
 	imagejpeg($crop, $path."/".$file_data[4]);
 	imagedestroy($crop);
 }
-
 function demographic($job, $file_array, $check_data1, $check_data2, $check_data3){
-	echo '<form id="demo" class = "input" action="./post.php?load='.$job.'&load2=demo" method="post" target="_self">
-		 <br>
-
-		<span class="instructions"> Your Gender: </span> <br>
-		<input type="radio" name="gender" value="male" required>Male<br>
-		<input type="radio" name="gender" value="female" required>Female<br>
-		<input type="radio" name="gender" value="unknown" required>Neither<br><br>
-
-		<span class="instructions"> Your Race: </span> <br>
-		<input type="radio" name="race" value="white" required>White<br>
-		<input type="radio" name="race" value="black" required>Black<br>
-		<input type="radio" name="race" value="asian" required>Asian<br>
-		<input type="radio" name="race" value="americanindian" required>American Indian<br>
-		<input type="radio" name="race" value="pacificislander" required>Pacific Islander<br>
-		<input type="radio" name="race" value="unknown" required>None of the above, mixed, or unknown<br><br>
-
-		<span class="instructions"> Your age: </span> <br>
-		<input type="radio" name="age" value="18-25" required>18-25<br>
-		<input type="radio" name="age" value="26-35" required>26-35<br>
-		<input type="radio" name="age" value="36-45" required>36-45<br>
-		<input type="radio" name="age" value="46-55" required>46-55<br>
-		<input type="radio" name="age" value="56-65" required>56-65<br>
-		<input type="radio" name="age" value="66+"   required>66+<br><br>
-		
-		<span class="instructions"> Your location: </span> <br> 
-		<input type="radio" name="location" value="Asia" required>Asia (including Turkey and Indonesia, excluding Russia and Egypt)<br>
-		<input type="radio" name="location" value="Europe" required>Europe (including Russia)<br>
-		<input type="radio" name="location" value="Africa" required>Africa (including the Sinai Peninsula in Egypt)<br>
-		<input type="radio" name="location" value="North America" required>North America (including Central America and the Caribbean)<br>
-		<input type="radio" name="location" value="South America" required>South America<br>
-		<input type="radio" name="location" value="Antarctica" required>Antarctica<br>
-		<input type="radio" name="location" value="Oceania" required>Australia and Oceania<br><br>
-		
-		<input type="submit" name="submitted" value="submit"> <br><br>
-		
-		<input type="hidden" name="file_array" value="'.implode(',',$file_array).'">
-		<input type="hidden" name="check_data1" value="'.implode(',',$check_data1).'">
-		<input type="hidden" name="check_data2" value="'.implode(',',$check_data2).'">
-		<input type="hidden" name="check_data3" value="'.implode(',',$check_data3).'">
-		
-		 </form>';
-	exit;
+	echo '<br>
+		 <span class="instructions"> Your Gender: </span> <br>
+		 <input type="radio" name="gender" value="male" required>Male<br>
+		 <input type="radio" name="gender" value="female" required>Female<br>
+		 <input type="radio" name="gender" value="unknown" required>Neither<br><br>
+		 <span class="instructions"> Your Race: </span> <br>
+		 <input type="radio" name="race" value="white" required>White<br>
+		 <input type="radio" name="race" value="black" required>Black<br>
+		 <input type="radio" name="race" value="asian" required>Asian<br>
+		 <input type="radio" name="race" value="americanindian" required>American Indian<br>
+		 <input type="radio" name="race" value="pacificislander" required>Pacific Islander<br>
+		 <input type="radio" name="race" value="unknown" required>None of the above, mixed, or unknown<br><br>
+		 <span class="instructions"> Your age: </span> <br>
+		 <input type="radio" name="age" value="18-25" required>18-25<br>
+		 <input type="radio" name="age" value="26-35" required>26-35<br>
+		 <input type="radio" name="age" value="36-45" required>36-45<br>
+		 <input type="radio" name="age" value="46-55" required>46-55<br>
+		 <input type="radio" name="age" value="56-65" required>56-65<br>
+		 <input type="radio" name="age" value="66+"   required>66+<br><br>
+		 
+		 <span class="instructions"> Your location: </span> <br> 
+		 <input type="radio" name="location" value="Asia" required>Asia (including Turkey and Indonesia, excluding Russia and Egypt)<br>
+		 <input type="radio" name="location" value="Europe" required>Europe (including Russia)<br>
+		 <input type="radio" name="location" value="Africa" required>Africa (including the Sinai Peninsula in Egypt)<br>
+		 <input type="radio" name="location" value="North America" required>North America (including Central America and the Caribbean)<br>
+		 <input type="radio" name="location" value="South America" required>South America<br>
+		 <input type="radio" name="location" value="Antarctica" required>Antarctica<br>
+		 <input type="radio" name="location" value="Oceania" required>Australia and Oceania<br><br>
+		 
+		 <input type="submit" name="submitted" value="submit"> <br><br>';
 }
-
 function coverfaces($job, $connection, $filename, $file_data, $batch_current){
 	if($job == "crop"){
 		if($batch_current == $check[0] or $batch_current == $check[1] or $batch_current == $check[2]){
@@ -520,7 +477,6 @@ function coverfaces($job, $connection, $filename, $file_data, $batch_current){
 		 var x1=[]; var x2=[]; var y1=[]; var y2=[]; </script>';
 	while($coordinates = mysqli_fetch_array($result)){
 		$counter++;
-
 		echo '<script> 
 		x1.push('.$coordinates[0].'*width/'.$w.');
 		y1.push('.$coordinates[1].'*height/'.$h.');
@@ -538,7 +494,6 @@ function coverfaces($job, $connection, $filename, $file_data, $batch_current){
 			 var w = x2[i]-x1[i];
 			 var h = y2[i]-y1[i];
 			var rectangle = document.createElement("DIV");
-
 				rectangle.style.backgroundColor="#1dff00";
 				rectangle.style.border= "none";
 				rectangle.style.position="absolute";
@@ -549,7 +504,6 @@ function coverfaces($job, $connection, $filename, $file_data, $batch_current){
 				rectangle.style.width=w+"px";
 				rectangle.style.height=h+"px";
 				rectangle.style.zIndex=2;
-
 			document.body.appendChild(rectangle);
 			</script>';
 		}
@@ -561,7 +515,6 @@ function coverfaces($job, $connection, $filename, $file_data, $batch_current){
 			 var w = x2[i]-x1[i];
 			 var h = y2[i]-y1[i];
 			var rectangle = document.createElement("DIV");
-
 				rectangle.style.backgroundColor="rgba(29,255,0,0.1)";
 				rectangle.style.border= "thick solid #1dff00";
 				rectangle.style.position="absolute";
@@ -572,25 +525,10 @@ function coverfaces($job, $connection, $filename, $file_data, $batch_current){
 				rectangle.style.width=w+"px";
 				rectangle.style.height=h+"px";
 				rectangle.style.zIndex=2;
-
 			document.body.appendChild(rectangle);
 			</script>';
 		}
 	}	
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>
-

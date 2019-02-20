@@ -64,11 +64,12 @@ if($batch_current < $batch_size){
 				$filename = check_select($job, $connection);
 			}
 			else{
-				$filename = select($job, $batch_size, $connection);
+				$filename = select($job, $batch_size, $connection, $batch_current);
 				$file_array[] = $filename;
 
 			}
 			
+
 			$file_data = parse_filename($job, $filename);
 			
 			
@@ -90,7 +91,11 @@ else{
 		exit;
 	}
 	else{
+		echo '<form id="demo" class = "input" action="./post.php?load='.$job.'&load2=demo" method="post" target="_self">';
 		demographic($job, $file_array, $check_data1, $check_data2, $check_data3);
+		hidden($job, $batch_current, $filename, $file_data, $file_array, $check_data1, $check_data2, $check_data3);
+		echo '</form>';
+		exit;
 	}
 }
 
@@ -100,17 +105,18 @@ else{
 <div id="contentDiv">
 <?php
 	if($job == "crop"){
-		#echo '<img class="page" id="page" src="'.$file_data[5].$filename.'">';
-		echo '<img class="page" id="page" src="1961\1961-07-14\1961-07-14 page 10.jpg">';
+		echo '<img class="page" id="page" src="'.$file_data[5].$filename.'">';
+		//echo '<img class="page" id="page" src="1961\1961-07-14\1961-07-14 page 10.jpg">';
 		if(!empty($_POST) and $submitted == "another"){
-			coverfaces($job, $connection, $filename, $file_data);
+			coverfaces($job, $connection, $filename, $file_data, $batch_current, $check);
 		}
 	}
 	if($job == "tag"){
 		echo '<img class="page" id="page" src="'.$file_data[5].$file_data[4].'">';
-		coverfaces($job, $connection, $filename, $file_data, $batch_current);
+		coverfaces($job, $connection, $filename, $file_data, $batch_current, $batch_current, $check);
 		#echo '<img class="face" src="'.$file_data[6].$filename.'">';
 	}
+
 ?>
 </div>
 
@@ -124,7 +130,7 @@ else{
 		display($job, $file_data);
 		hidden($job, $batch_current, $filename, $file_data, $file_array, $check_data1, $check_data2, $check_data3);
 		echo '</form>';
-		if($job="crop"){
+		if($job=="crop"){
 			echo '<script>another()</script>';
 		}
 	?>
