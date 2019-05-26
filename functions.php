@@ -20,9 +20,9 @@ function db_connect (){
 
 #Edit these
 	$servername = "localhost";
-	$username = "...";
-	$password = '...';
-	$db = "...";
+	$username = "*******";
+	$password = '*******';
+	$db = "********";
 		
 	$connection = mysqli_connect($servername, $username, $password, $db);
 	
@@ -32,7 +32,7 @@ function db_connect (){
 	
 	return $connection;
 }
-function select($job, $batch_size, $connection){
+function select($job, $batch_size, $connection, $batch_current){
 	
 	if($job == "crop"){
 		$count_query1 = "SELECT COUNT(*) FROM `pages` WHERE `faces` IS NULL AND `group_num` IS NULL AND `working`=1;";
@@ -48,11 +48,13 @@ function select($job, $batch_size, $connection){
 	$result = mysqli_query($connection, $count_query1);
 	$row = mysqli_fetch_array($result);
 	$count1 = $row[0];
+	$count1 = $count1+1;
 	
 	$result = mysqli_query($connection, $count_query2);
 	$row = mysqli_fetch_array($result);
 	$count2 = $row[0];
-	if(($count2/($batch_size-3)) < ($count1)){
+	
+	if((($count2/($batch_size-3)) < ($count1)) and $batch_current==0) {
 		echo "<h1>Page requests are at capacity. <br> Please try again later.</h1>";
 		exit;
 	}
@@ -253,7 +255,7 @@ function submit($job, $connection){
 		global $file_data, $x1, $x2, $y1, $y2, $face, $batch_current;
 		if($batch_current == $check[0] or $batch_current == $check[1] or $batch_current == $check[2]){
 			if($submitted != "another"){
-				$delet_query = "DELETE FROM `crop_check` WHERE `year` = $year AND `month` = $month AND `day` = $day AND `page` = $page_number;";
+				$delete_query = "DELETE FROM `crop_check` WHERE `year` = $year AND `month` = $month AND `day` = $day AND `page` = $page_number;";
 				mysqli_query($connection, $delete_query);
 			}
 			else{	
@@ -448,22 +450,29 @@ function demographic($job, $file_array, $check_data1, $check_data2, $check_data3
 		 
 		 <input type="submit" name="submitted" value="submit"> <br><br>';
 }
-function coverfaces($job, $connection, $filename, $file_data, $batch_current){
+function coverfaces($job, $connection, $filename, $file_data, $batch_current, $check){
+
 	if($job == "crop"){
 		if($batch_current == $check[0] or $batch_current == $check[1] or $batch_current == $check[2]){
-			$coordinate_query = "SELECT `x1`, `y1`, `x2`, `y2` FROM `crop_check` WHERE `year` = ".$file_data[0]." 
-								AND `month`=".$file_data[1]." AND `day`=".$file_data[2]." AND `page` = ".$file_data[3].";";
+			$coordinate_query = 'SELECT `x1`, `y1`, `x2`, `y2` FROM `crop_check` WHERE `year` = ".$file_data[0]." AND `month`=".$file_data[1]." AND `day`=".$file_data[2]." AND `page` = ".$file_data[3].";';
 		}
 		else{
-			$coordinate_query = "SELECT `x1`, `y1`, `x2`, `y2` FROM `data` WHERE `year` = ".$file_data[0]." 
-								AND `month`=".$file_data[1]." AND `day`=".$file_data[2]." AND `page` = ".$file_data[3].";";
+			$coordinate_query = 'SELECT `x1`, `y1`, `x2`, `y2` FROM `data` WHERE `year` = ".$file_data[0]." AND `month`=".$file_data[1]." AND `day`=".$file_data[2]." AND `page` = ".$file_data[3].";';
 		}
 		$path = $file_data[5].$filename;
 	}
 	if($job == "tag"){
-		$coordinate_query = "SELECT `x1`, `y1`, `x2`, `y2` FROM `data` WHERE `image` = '$filename';";
+
+		if($batch_current == $check[0] or $batch_current == $check[1] or $batch_current == $check[2]){
+			$coordinate_query = "SELECT `x1`, `y1`, `x2`, `y2` FROM `ground_truth` WHERE `image` = '$filename';";
+		}
+		else{
+			$coordinate_query = "SELECT `x1`, `y1`, `x2`, `y2` FROM `data` WHERE `image` = '$filename';";
+		}
+
 		$path = $file_data[5].$file_data[4];
 	}
+
 	$result = mysqli_query($connection, $coordinate_query);
 	
 	$image_size = getimagesize($path);

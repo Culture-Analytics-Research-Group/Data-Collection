@@ -113,7 +113,7 @@ else{
 	}
 	if($job == "tag"){
 		echo '<img class="page" id="page" src="'.$file_data[5].$file_data[4].'">';
-		coverfaces($job, $connection, $filename, $file_data, $batch_current, $batch_current, $check);
+		coverfaces($job, $connection, $filename, $file_data, $batch_current, $check);
 		#echo '<img class="face" src="'.$file_data[6].$filename.'">';
 	}
 
